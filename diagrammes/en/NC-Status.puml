@@ -1,0 +1,107 @@
+@startuml NC-Status
+' =============================================================================
+' Nonconformity management — how the app calculates an NC's status
+' Complements NC-Flowchart.puml: here, the exact rule and its order of priority.
+' English version of ../Statut-NC.puml: same structure, keep both in step.
+'
+' Rendering: PlantUML 1.2023 or later (checked with 1.2023.13 and 1.2026.8).
+'
+' Same colour code as the flowchart:
+'   <<user>>  user action in the app
+'   <<auto>>  status set or recalculated by the app, with no data entry
+' Orange shapes are decisions; here, all of them are automatic tests by the app.
+'
+' Status values are translated; the README glossary gives the app's own
+' (French) values. Sources and full legend: README.md, in this folder.
+' =============================================================================
+
+' Second line of a box: the screen or formula behind the action.
+!function $tech($text)
+!return "<size:10><color:#555555>" + $text + "</color></size>"
+!endfunction
+
+!pragma useVerticalIf on
+skinparam defaultFontSize 12
+skinparam ConditionEndStyle hline
+skinparam activity {
+  BackgroundColor<<user>> #DCEBFA
+  BorderColor<<user>> #2E6DA4
+  BackgroundColor<<auto>> #EEEEEE
+  BorderColor<<auto>> #8A8A8A
+  DiamondBackgroundColor #FFE7C2
+  DiamondBorderColor #B26B00
+}
+skinparam note {
+  BackgroundColor #FFFBE6
+  BorderColor #C8B560
+}
+
+title NC status — how the app calculates it
+
+start
+:Save an analysis or an action\n$tech("ecrEditionAnalyse, ecrEditionAction"); <<user>>
+note right
+  An NC's status is never entered by hand:
+  it is read-only in ecrEditionNC,
+  and a new NC starts as “Open”.
+end note
+
+if (NC “Awaiting signature” or “Closed”?) then (yes)
+  :Status unchanged:\nit belongs to the report workflow; <<auto>>
+  note right
+    The report workflow sets “Awaiting signature”
+    and “Closed”, and returns the NC to
+    “Effectiveness check” on refusal or revision
+    (flowchart, phases 5 and 6).
+  end note
+  stop
+else (no)
+endif
+
+:Find the target status: the first true condition wins\n$tech("App.Formulas › StatutNCCible"); <<auto>>
+note right
+  Corrective action = type “Corrective action”
+  only. An immediate action is containment
+  and is not counted.
+end note
+
+if (At least one corrective action, all “Approved”\nor “Rejected”, at least one “Approved”?) then (yes)
+  :“Effectiveness check”; <<auto>>
+elseif (At least one corrective action\nwith a start date?) then (yes)
+  :“CAPA in progress”; <<auto>>
+  note right
+    The calculation can go backwards: a new
+    corrective action on an NC in “Effectiveness
+    check” brings it back here. This is how a
+    rejected follow-up reopens the CAPA.
+  end note
+elseif (At least one corrective action?) then (yes)
+  :“CAPA defined”; <<auto>>
+  note right
+    Known defect: a “Rejected” action counts.
+    An NC whose only corrective action was
+    rejected therefore stays “CAPA defined”, or
+    “CAPA in progress” if the action had started.
+  end note
+elseif (At least one analysis?) then (yes)
+  :“Under analysis”; <<auto>>
+else (no)
+  :“Open”; <<auto>>
+endif
+
+if (Target status different from the current one?) then (yes)
+  :Write the new status:\nthe label changes on screen, without a reload; <<auto>>
+else (no)
+  :Write nothing:\nno modified date, no extra history version; <<auto>>
+endif
+stop
+
+legend bottom left
+  |= Colour |= Who acts |
+  |<#DCEBFA>          | User action in the app |
+  |<#EEEEEE>          | Status set or recalculated by the app, with no data entry |
+  |<#FFE7C2>          | Automatic test by the app |
+  The “Approved” and “Rejected” judgments remain human:
+  the app sets a status from facts, never from judgments.
+endlegend
+@enduml

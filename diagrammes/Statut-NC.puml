@@ -1,0 +1,106 @@
+@startuml Statut-NC
+' =============================================================================
+' Gestion des non-conformités — comment l'app calcule le statut d'une NC
+' Complète Logigramme-NC.puml : ici, la règle exacte, avec son ordre de priorité.
+'
+' Rendu : PlantUML 1.2023 ou plus récent (vérifié avec 1.2023.13 et 1.2026.8).
+'
+' Même code couleur que le logigramme :
+'   <<saisie>>  geste de l'utilisateur dans l'app
+'   <<calcul>>  statut posé ou recalculé par l'app, sans saisie
+' Les formes orangées sont les décisions ; ici, toutes sont des tests
+' automatiques de l'app.
+'
+' Sources et légende détaillée : README.md, dans ce dossier.
+' =============================================================================
+
+' Seconde ligne d'une boîte : l'écran ou la formule qui porte le geste.
+!function $tech($texte)
+!return "<size:10><color:#555555>" + $texte + "</color></size>"
+!endfunction
+
+!pragma useVerticalIf on
+skinparam defaultFontSize 12
+skinparam ConditionEndStyle hline
+skinparam activity {
+  BackgroundColor<<saisie>> #DCEBFA
+  BorderColor<<saisie>> #2E6DA4
+  BackgroundColor<<calcul>> #EEEEEE
+  BorderColor<<calcul>> #8A8A8A
+  DiamondBackgroundColor #FFE7C2
+  DiamondBorderColor #B26B00
+}
+skinparam note {
+  BackgroundColor #FFFBE6
+  BorderColor #C8B560
+}
+
+title Statut d'une NC — comment l'app le calcule
+
+start
+:Enregistrer une analyse ou une action\n$tech("ecrEditionAnalyse, ecrEditionAction"); <<saisie>>
+note right
+  Le statut d'une NC n'est jamais saisi :
+  il est en lecture seule dans ecrEditionNC,
+  et une NC neuve naît « Ouverte ».
+end note
+
+if (NC « En signature » ou « Close » ?) then (oui)
+  :Statut inchangé :\nil relève du circuit du rapport; <<calcul>>
+  note right
+    Le circuit du rapport pose « En signature »
+    et « Close », et ramène la NC « En vérif
+    efficacité » en cas de refus ou de révision
+    (logigramme, phases 5 et 6).
+  end note
+  stop
+else (non)
+endif
+
+:Chercher le statut cible : la première condition vraie l'emporte\n$tech("App.Formulas › StatutNCCible"); <<calcul>>
+note right
+  Action corrective = type « Action corrective »
+  seulement. Une action immédiate relève du
+  confinement et n'est pas comptée.
+end note
+
+if (Au moins une action corrective, toutes « Approuvée »\nou « Rejetée », dont au moins une « Approuvée » ?) then (oui)
+  :« En vérif efficacité »; <<calcul>>
+elseif (Au moins une action corrective\navec une date de début ?) then (oui)
+  :« CAPA en cours »; <<calcul>>
+  note right
+    Le calcul peut reculer : une nouvelle action
+    corrective sur une NC « En vérif efficacité »
+    la ramène ici. C'est ainsi qu'un suivi
+    rejeté rouvre la CAPA.
+  end note
+elseif (Au moins une action corrective ?) then (oui)
+  :« CAPA définie »; <<calcul>>
+  note right
+    Défaut connu : une action « Rejetée » compte.
+    Une NC dont la seule action corrective est
+    rejetée reste donc « CAPA définie », ou
+    « CAPA en cours » si l'action avait démarré.
+  end note
+elseif (Au moins une analyse ?) then (oui)
+  :« En analyse »; <<calcul>>
+else (non)
+  :« Ouverte »; <<calcul>>
+endif
+
+if (Statut cible différent du statut actuel ?) then (oui)
+  :Écrire le nouveau statut :\nl'étiquette change à l'écran, sans rechargement; <<calcul>>
+else (non)
+  :Ne rien écrire :\nni date de modification, ni version d'historique en plus; <<calcul>>
+endif
+stop
+
+legend bottom left
+  |= Couleur |= Qui agit |
+  |<#DCEBFA>          | Geste de l'utilisateur dans l'app |
+  |<#EEEEEE>          | Statut posé ou recalculé par l'app, sans saisie |
+  |<#FFE7C2>          | Test automatique de l'app |
+  Les jugements « Approuvée » et « Rejetée » restent humains :
+  l'app avance un statut sur un fait, jamais sur un jugement.
+endlegend
+@enduml

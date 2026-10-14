@@ -1,0 +1,4 @@
+# Fins de ligne LF pour le texte, images en binaire.
+* text=auto eol=lf
+*.svg text eol=lf
+*.png binary

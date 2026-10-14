@@ -1,0 +1,158 @@
+@startuml NC-Flowchart
+' =============================================================================
+' Nonconformity management — operational and decision flowchart
+' From the entry of an NC to report generation, signature and closure.
+' English version of ../Logigramme-NC.puml: same structure, keep both in step.
+'
+' Rendering: PlantUML 1.2023 or later (checked with 1.2023.13 and 1.2026.8).
+'
+' A box's colour shows WHO acts; it is declared at the end of the line:
+'   <<user>>     user action in the app
+'   <<auto>>     status set or recalculated by the app, with no data entry
+'   <<flow>>     Power Automate flow called by the app
+'   <<outside>>  outside the system: reporting, email, signature
+' Orange shapes are decisions. "App:" at the start = automatic test by the
+' app; no prefix = human decision.
+'
+' Status values are translated; the README glossary gives the app's own
+' (French) values. Sources and full legend: README.md, in this folder.
+' =============================================================================
+
+' Second line of a box: the screen or flow behind the action.
+!function $tech($text)
+!return "<size:10><color:#555555>" + $text + "</color></size>"
+!endfunction
+
+skinparam defaultFontSize 12
+skinparam ConditionEndStyle hline
+skinparam activity {
+  BackgroundColor<<user>> #DCEBFA
+  BorderColor<<user>> #2E6DA4
+  BackgroundColor<<auto>> #EEEEEE
+  BorderColor<<auto>> #8A8A8A
+  BackgroundColor<<flow>> #E8DEF8
+  BorderColor<<flow>> #6A4C9C
+  BackgroundColor<<outside>> #FFFFFF
+  BorderColor<<outside>> #B26B00
+  DiamondBackgroundColor #FFE7C2
+  DiamondBorderColor #B26B00
+}
+skinparam note {
+  BackgroundColor #FFFBE6
+  BorderColor #C8B560
+}
+
+title Nonconformity management — from entry to closure
+
+start
+:Nonconformity detected\n(reported by an internal or external party); <<outside>>
+
+partition "1. Opening" {
+  :Enter the NC\n$tech("ecrEditionNC"); <<user>>
+  :NC “Open”; <<auto>>
+  if (Containment needed?) then (yes)
+    :Enter the immediate action\n$tech("ecrEditionAction"); <<user>>
+    note right
+      Containment does not count
+      toward the NC status.
+    end note
+  else (no)
+  endif
+}
+
+partition "2. Root cause analysis" {
+  :Enter the analysis: root cause, 5 Whys\n$tech("ecrEditionAnalyse"); <<user>>
+  note right
+    Analysis, actions and follow-ups: the app
+    enforces no order. Their “+” buttons stay
+    available as long as the NC is neither
+    “Awaiting signature” nor “Closed”.
+  end note
+  :NC “Under analysis”; <<auto>>
+}
+
+if (Corrective action required?) then (yes)
+  repeat
+    partition "3. Corrective actions (CAPA)" {
+      repeat
+        :Define the corrective action\n$tech("ecrEditionAction"); <<user>>
+        :Action “Planned”\nNC “CAPA defined” on the first action; <<auto>>
+        :Enter the start date; <<user>>
+        :Action “In progress”\nNC “CAPA in progress”; <<auto>>
+        :Carry out the action, enter the completion date; <<user>>
+        if (Action decision?) then (approved:\nrequires the completion date)
+          :Select “Approved”; <<user>>
+        else (rejected:\nallowed at any time)
+          :Select “Rejected”; <<user>>
+        endif
+      repeat while (App: corrective actions\nall decided, at least\none approved?) is (no: finish them\nor define another) not (yes)
+      :NC “Effectiveness check”; <<auto>>
+    }
+    partition "4. Effectiveness verification" {
+      :Plan the follow-up: criterion, date, linked actions\n$tech("ecrEditionSuivi"); <<user>>
+      :Follow-up “Planned”; <<auto>>
+      :Submit the evidence\n$tech("ecrEditionPreuve"); <<user>>
+      :Upload the file to the evidence library\n$tech("flow NC-Televerser-Preuve"); <<flow>>
+      :Follow-up “In progress”\nonce any evidence exists, direct or via a linked action; <<auto>>
+      :Verify effectiveness, enter the verification date; <<user>>
+    }
+  repeat while (Effectiveness demonstrated?\n(requires the verification date)) is (no: follow-up “Rejected”;\nnew corrective action,\nthe NC returns to “CAPA in progress”) not (yes: follow-up “Approved”)
+  note right
+    “Under monitoring” remains a manual
+    choice that reaches no conclusion.
+  end note
+else (no: straight\nto the report)
+endif
+
+partition "5. Report and signature" {
+  :Create report version 1\n$tech("ecrRapport"); <<user>>
+  note right
+    No version can be created on a “Closed” NC.
+  end note
+  :Version “Draft”; <<auto>>
+  repeat
+    repeat
+      :Write or carry over the three summaries:\nimmediate actions, corrective actions,\neffectiveness (“Not applicable” accepted)\n$tech("ecrRapport"); <<user>>
+      :Generate the draft PDF for review (optional)\n$tech("flow NC-Generer-Rapport"); <<flow>>
+      :Send for signature\n$tech("ecrRapport"); <<user>>
+      note right
+        No check on the NC status:
+        only the summaries check applies.
+      end note
+    repeat while (App: three summaries filled in?) is (no: request refused,\nstatuses unchanged) not (yes)
+    :Version “Awaiting signature”; <<auto>>
+    :Regenerate the PDF marked “Version n — FOR SIGNATURE”\n$tech("flow NC-Generer-Rapport"); <<flow>>
+    :NC “Awaiting signature”\nrecord locked: fields read-only, “+” buttons hidden; <<auto>>
+    :Send the PDF to the approver\n(user's own email, outside the app); <<outside>>
+    :Review the report, then sign or refuse it\n(approver, outside the system); <<outside>>
+    if (Report signed?) then (yes)
+      :Submit the signed PDF and its signature date,\non or after the version date\n$tech("ecrRapport"); <<user>>
+      :Store the file, then set the version to “Signed”\n$tech("flow NC-Deposer-Rapport-Signe"); <<flow>>
+    else (no: refused)
+    endif
+  repeat while (New version needed?\n(refusal, or revision of a signed report)) is (yes: reason required;\nversion “Superseded”, v+1 “Draft”\nwith the summaries carried over;\nNC “Effectiveness check”, reopened) not (no)
+}
+
+partition "6. Closure" {
+  :Close the NC, with a closure date\non or after the signature date\n$tech("ecrRapport"); <<user>>
+  :NC “Closed”\nno more versions; records locked; <<auto>>
+  note right
+    Closure is a human act: the app sees that
+    a file is present, not that it is signed.
+    Evidence can still be added to the record,
+    but no longer removed or modified.
+  end note
+}
+stop
+
+legend bottom left
+  |= Colour |= Who acts |
+  |<#DCEBFA>          | User action in the app |
+  |<#EEEEEE>          | Status set or recalculated by the app, with no data entry |
+  |<#E8DEF8>          | Power Automate flow called by the app |
+  |<#FFFFFF>          | Outside the system |
+  |<#FFE7C2>          | Decision: “App:” = automatic test, otherwise human decision |
+  Statuses follow from the recorded facts; judgments
+  (approve, reject, sign, close) remain human acts.
+endlegend
+@enduml

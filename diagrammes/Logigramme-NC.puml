@@ -1,0 +1,156 @@
+@startuml Logigramme-NC
+' =============================================================================
+' Gestion des non-conformités — logigramme opérationnel et décisionnel
+' De la saisie d'une NC à la génération du rapport, sa signature et la clôture.
+'
+' Rendu : PlantUML 1.2023 ou plus récent (vérifié avec 1.2023.13 et 1.2026.8).
+'
+' La couleur d'une boîte dit QUI agit ; elle se déclare en fin de ligne :
+'   <<saisie>>  geste de l'utilisateur dans l'app
+'   <<calcul>>  statut posé ou recalculé par l'app, sans saisie
+'   <<flux>>    flux Power Automate appelé par l'app
+'   <<hors>>    hors du système : signalement, courriel, signature
+' Les formes orangées sont les décisions. « App : » en tête = test automatique
+' de l'app ; sans préfixe = décision humaine.
+'
+' Sources et légende détaillée : README.md, dans ce dossier.
+' =============================================================================
+
+' Seconde ligne d'une boîte : l'écran ou le flux qui porte le geste.
+!function $tech($texte)
+!return "<size:10><color:#555555>" + $texte + "</color></size>"
+!endfunction
+
+skinparam defaultFontSize 12
+skinparam ConditionEndStyle hline
+skinparam activity {
+  BackgroundColor<<saisie>> #DCEBFA
+  BorderColor<<saisie>> #2E6DA4
+  BackgroundColor<<calcul>> #EEEEEE
+  BorderColor<<calcul>> #8A8A8A
+  BackgroundColor<<flux>> #E8DEF8
+  BorderColor<<flux>> #6A4C9C
+  BackgroundColor<<hors>> #FFFFFF
+  BorderColor<<hors>> #B26B00
+  DiamondBackgroundColor #FFE7C2
+  DiamondBorderColor #B26B00
+}
+skinparam note {
+  BackgroundColor #FFFBE6
+  BorderColor #C8B560
+}
+
+title Gestion des non-conformités — de la saisie à la clôture
+
+start
+:Non-conformité détectée\n(lanceur d'alerte interne ou externe); <<hors>>
+
+partition "1. Ouverture" {
+  :Saisir la NC\n$tech("ecrEditionNC"); <<saisie>>
+  :NC « Ouverte »; <<calcul>>
+  if (Confinement nécessaire ?) then (oui)
+    :Saisir l'action immédiate\n$tech("ecrEditionAction"); <<saisie>>
+    note right
+      Le confinement n'entre pas
+      dans le calcul du statut de la NC.
+    end note
+  else (non)
+  endif
+}
+
+partition "2. Analyse causale" {
+  :Saisir l'analyse : cause racine, 5 pourquoi\n$tech("ecrEditionAnalyse"); <<saisie>>
+  note right
+    Analyse, actions et suivis : l'app n'impose
+    aucun ordre. Leurs boutons « + » restent
+    offerts tant que la NC n'est ni
+    « En signature » ni « Close ».
+  end note
+  :NC « En analyse »; <<calcul>>
+}
+
+if (Action corrective requise ?) then (oui)
+  repeat
+    partition "3. Actions correctives (CAPA)" {
+      repeat
+        :Définir l'action corrective\n$tech("ecrEditionAction"); <<saisie>>
+        :Action « Planifiée »\nNC « CAPA définie » à la première action; <<calcul>>
+        :Saisir la date de début; <<saisie>>
+        :Action « En cours »\nNC « CAPA en cours »; <<calcul>>
+        :Réaliser l'action, saisir la date de réalisation; <<saisie>>
+        if (Jugement de l'action ?) then (approuvée :\nexige la date de réalisation)
+          :Choisir « Approuvée »; <<saisie>>
+        else (rejetée :\npermise à tout moment)
+          :Choisir « Rejetée »; <<saisie>>
+        endif
+      repeat while (App : actions correctives\ntoutes jugées, dont au\nmoins une approuvée ?) is (non : faire aboutir\nou définir une autre) not (oui)
+      :NC « En vérif efficacité »; <<calcul>>
+    }
+    partition "4. Vérification d'efficacité" {
+      :Planifier le suivi : critère, date, actions rattachées\n$tech("ecrEditionSuivi"); <<saisie>>
+      :Suivi « Planifiée »; <<calcul>>
+      :Déposer les preuves\n$tech("ecrEditionPreuve"); <<saisie>>
+      :Téléverser le fichier dans la bibliothèque des preuves\n$tech("flux NC-Televerser-Preuve"); <<flux>>
+      :Suivi « En cours »\ndès une preuve, directe ou via une action rattachée; <<calcul>>
+      :Vérifier l'efficacité, saisir la date de vérification; <<saisie>>
+    }
+  repeat while (Efficacité démontrée ?\n(exige la date de vérification)) is (non : suivi « Rejetée » ;\nnouvelle action corrective,\nla NC revient « CAPA en cours ») not (oui : suivi « Approuvée »)
+  note right
+    « En surveillance » reste un choix
+    manuel, qui ne conclut pas.
+  end note
+else (non : directement\nau rapport)
+endif
+
+partition "5. Rapport et signature" {
+  :Créer la version 1 du rapport\n$tech("ecrRapport"); <<saisie>>
+  note right
+    Aucune version sur une NC « Close ».
+  end note
+  :Version « Brouillon »; <<calcul>>
+  repeat
+    repeat
+      :Rédiger ou reprendre les trois synthèses :\nimmédiates, correctives, efficacité (« Sans objet » admis)\n$tech("ecrRapport"); <<saisie>>
+      :Générer le PDF brouillon pour relecture (facultatif)\n$tech("flux NC-Generer-Rapport"); <<flux>>
+      :Passer en signature\n$tech("ecrRapport"); <<saisie>>
+      note right
+        Aucune garde sur le statut de la NC :
+        seule celle des synthèses s'applique.
+      end note
+    repeat while (App : trois synthèses renseignées ?) is (non : passage refusé,\nstatuts inchangés) not (oui)
+    :Version « En signature »; <<calcul>>
+    :Régénérer le PDF « Version n — POUR SIGNATURE »\n$tech("flux NC-Generer-Rapport"); <<flux>>
+    :NC « En signature »\ndossier figé : champs verrouillés, boutons « + » masqués; <<calcul>>
+    :Envoyer le PDF à l'approbateur\n(courriel de l'utilisateur, hors de l'app); <<hors>>
+    :Relire le rapport, le signer ou le refuser\n(approbateur, hors système); <<hors>>
+    if (Rapport signé ?) then (oui)
+      :Déposer le PDF signé et sa date de signature,\npostérieure ou égale à la date de la version\n$tech("ecrRapport"); <<saisie>>
+      :Déposer le fichier, puis passer la version « Signé »\n$tech("flux NC-Deposer-Rapport-Signe"); <<flux>>
+    else (non : refus)
+    endif
+  repeat while (Nouvelle version nécessaire ?\n(refus, ou révision d'un rapport signé)) is (oui : motif obligatoire ;\nversion « Remplacé », v+1 « Brouillon »\navec les synthèses reprises ;\nNC « En vérif efficacité », dossier rouvert) not (non)
+}
+
+partition "6. Clôture" {
+  :Clore la NC, date de clôture postérieure\nou égale à la date de signature\n$tech("ecrRapport"); <<saisie>>
+  :NC « Close »\nplus aucune version ; enregistrements figés; <<calcul>>
+  note right
+    La clôture est un acte humain : l'app constate
+    la présence d'un fichier, pas une signature.
+    Une preuve peut encore s'ajouter au dossier,
+    plus s'en retirer ni se modifier.
+  end note
+}
+stop
+
+legend bottom left
+  |= Couleur |= Qui agit |
+  |<#DCEBFA>          | Geste de l'utilisateur dans l'app |
+  |<#EEEEEE>          | Statut posé ou recalculé par l'app, sans saisie |
+  |<#E8DEF8>          | Flux Power Automate appelé par l'app |
+  |<#FFFFFF>          | Hors du système |
+  |<#FFE7C2>          | Décision : « App : » = test automatique, sinon décision humaine |
+  Les statuts découlent des faits enregistrés ; les jugements
+  (approuver, rejeter, signer, clore) restent des actes humains.
+endlegend
+@enduml
