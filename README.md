@@ -1,5 +1,9 @@
 # Gestion des non-conformités — Power Apps, SharePoint, Power Automate
 
+![Avant : classeurs papier et tableur Excel. Avec Power Apps : un écran de pilotage des actions](images/avant-apres.png)
+
+*Illustration générée par IA. Les vraies captures de l'application sont plus bas et dans les vidéos.*
+
 Une application Power Apps qui porte tout le cycle d'une non-conformité (NC) dans un
 laboratoire d'essais accrédité ISO/IEC 17025 : déclaration, analyse des causes, actions,
 vérification d'efficacité, preuves, rapport PDF, signature et clôture.
@@ -14,9 +18,15 @@ données montrées sont fictives.
 
 Auteur : Sébastien Oger.
 
-![Écran d'accueil de l'application](images/accueil.png)
+## En vidéo
+
+| [![Présentation de l'application, vidéo YouTube](https://img.youtube.com/vi/54l2evrDRsg/mqdefault.jpg)](https://youtu.be/54l2evrDRsg) | [![Traiter une non-conformité, vidéo YouTube](https://img.youtube.com/vi/97vB7qhM8t0/mqdefault.jpg)](https://youtu.be/97vB7qhM8t0) |
+|---|---|
+| **[Présentation](https://youtu.be/54l2evrDRsg)** : le parcours en six étapes, sur le jeu de démonstration | **[Utilisation](https://youtu.be/97vB7qhM8t0)** : une non-conformité traitée, de la déclaration au suivi d'efficacité |
 
 ## Ce que fait l'application
+
+![Écran d'accueil de l'application](images/accueil.png)
 
 | Étape | Ce que l'utilisateur fait | Ce que l'application garantit |
 |---|---|---|
@@ -103,5 +113,5 @@ Deux documents complètent ce tableau :
 - Le volet d'analyse de données sous Power BI, prévu au départ, n'a pas été réalisé.
 - Le téléversement par le contrôle moderne « Attachments » est suspendu : il n'existait pas
   encore dans l'environnement utilisé.
-- Depuis la refonte visuelle, deux des trois flux n'ont pas été rejoués depuis l'application.
-  Le détail est dans la [chronologie](docs/Chronologie.md).
+- Depuis la refonte visuelle, le dépôt du rapport signé n'a pas été rejoué depuis
+  l'application. Le détail est dans la [chronologie](docs/Chronologie.md).

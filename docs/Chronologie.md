@@ -27,6 +27,9 @@ PDF par un connecteur standard était prouvée, ce qui levait le seul critère d
 | 1ᵉʳ–8 oct. | 32 | Jeu de douze NC fictives, diagrammes du processus en français et en anglais. Site de démonstration monté par script : 11 listes, 3 flux, 10 sources, jeu fictif chargé et relu (1 416 champs, 0 écart). |
 | 9–12 oct. | 26 | Téléversement par un contrôle plus récent : suspendu. Rapports du jeu fictif générés, signés et déposés. Refonte visuelle des écrans d'édition, du rapport et de la fiche, avec une charte de design. Projet déclaré terminé le 12 octobre. |
 
+Après la clôture, deux vidéos de démonstration ont été tournées sur le jeu fictif et publiées le
+16 octobre : une présentation et un scénario d'utilisation.
+
 ## Ce que l'historique montre
 
 **Un incident a changé la méthode.** Le 9 septembre, cinq modifications faites d'un coup cassent
@@ -61,6 +64,6 @@ l'application, jeu fictif.
 
 - Le volet Power BI n'a pas été réalisé.
 - Le téléversement par le contrôle moderne attend la disponibilité de ce contrôle.
-- Depuis la refonte visuelle, deux des trois flux n'ont pas été rejoués depuis l'application :
-  le dépôt d'une preuve et le dépôt d'un rapport signé. Ils avaient été éprouvés de bout en bout
-  les 23 et 25 septembre.
+- Depuis la refonte visuelle, le dépôt d'un rapport signé n'a pas été rejoué depuis
+  l'application. Il avait été éprouvé de bout en bout le 25 septembre. Le dépôt d'une preuve,
+  lui, a été rejoué le 14 octobre, pendant le tournage de la seconde vidéo.
