@@ -14,8 +14,9 @@
 ![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
 
 >  🎥 **Voir le projet en action** — ![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?logo=YouTube&logoColor=white)
--  [▶ Présentation générale](https://youtu.be/54l2evrDRsg)
--  [▶ Traiter une non-conformité](https://youtu.be/97vB7qhM8t0)
+-  ▶ Présentation générale : [en français](https://youtu.be/54l2evrDRsg) · [in English](https://youtu.be/oWrh44XMF6M)
+-  ▶ Le processus de traitement : [en français](https://youtu.be/7p1tBGSLCGk) · [in English](https://youtu.be/DaTqv29k_VU)
+-  🌐 [La page du projet sur le portfolio](https://sebastienoger.ca/projets/nonconformity-management)
 
 Une application Power Apps qui porte tout le cycle d'une non-conformité (NC) dans un
 laboratoire d'essais accrédité ISO/IEC 17025 : déclaration, analyse des causes, actions,
@@ -34,16 +35,16 @@ Auteur : Sébastien Oger.
 ## 🎥 Démonstrations vidéo
 
 Le moyen le plus rapide de voir l'application réelle en action : **cliquer sur une vignette
-ouvre la vidéo**.
+ouvre la vidéo** en français. Chaque vidéo existe aussi en anglais.
 
 <table>
   <tr>
     <td width="50%" align="center"><a href="https://youtu.be/54l2evrDRsg"><img src="images/video-presentation.png" width="100%" alt="Présentation générale de l'application"></a></td>
-    <td width="50%" align="center"><a href="https://youtu.be/97vB7qhM8t0"><img src="images/video-utilisation.png" width="100%" alt="Traiter une non-conformité dans l'application"></a></td>
+    <td width="50%" align="center"><a href="https://youtu.be/7p1tBGSLCGk"><img src="images/video-utilisation.png" width="100%" alt="Le processus de traitement d'une non-conformité dans l'application"></a></td>
   </tr>
   <tr>
-    <td align="center"><b>▶ <a href="https://youtu.be/54l2evrDRsg">Présentation générale</a></b><br/>Le parcours en six étapes, du signalement à la clôture, sur le jeu de démonstration.</td>
-    <td align="center"><b>▶ <a href="https://youtu.be/97vB7qhM8t0">Traiter une non-conformité</a></b><br/>Déclaration, action immédiate, preuve, analyse causale, action corrective et suivi d'efficacité.</td>
+    <td align="center"><b>▶ <a href="https://youtu.be/54l2evrDRsg">Présentation générale</a></b><br/>Le parcours en six étapes, du signalement à la clôture, sur le jeu de démonstration.<br/><a href="https://youtu.be/oWrh44XMF6M">English version</a></td>
+    <td align="center"><b>▶ <a href="https://youtu.be/7p1tBGSLCGk">Le processus de traitement</a></b><br/>Déclaration, action immédiate, preuve, analyse causale, action corrective et suivi d'efficacité.<br/><a href="https://youtu.be/DaTqv29k_VU">English version</a></td>
   </tr>
 </table>
 
