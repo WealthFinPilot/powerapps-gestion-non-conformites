@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="images/avant-apres.png" alt="Avant : classeurs papier et tableur Excel. Avec Power Apps : un écran de pilotage des actions" width="100%">
+  <img src="images/avant-apres.png" alt="Audit ISO 17025. Avant : classeurs papier et tableur Excel. Avec Power Apps : l'écran d'accueil de la gestion des non-conformités" width="100%">
 </p>
 
 # Gestion des non-conformités
