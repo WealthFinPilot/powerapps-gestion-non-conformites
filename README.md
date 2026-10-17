@@ -1,8 +1,21 @@
-# Gestion des non-conformités — Power Apps, SharePoint, Power Automate
+<p align="center">
+  <img src="images/avant-apres.png" alt="Avant : classeurs papier et tableur Excel. Avec Power Apps : un écran de pilotage des actions" width="100%">
+</p>
 
-![Avant : classeurs papier et tableur Excel. Avec Power Apps : un écran de pilotage des actions](images/avant-apres.png)
+# Gestion des non-conformités
+## Power Apps × SharePoint × Power Automate pour un système qualité ISO/IEC 17025
 
-*Illustration générée par IA. Les vraies captures de l'application sont plus bas et dans les vidéos.*
+![Power Apps](https://img.shields.io/badge/Power%20Apps-742774)
+![Power Automate](https://img.shields.io/badge/Power%20Automate-0066FF)
+![SharePoint](https://img.shields.io/badge/SharePoint-038387)
+![Power Fx](https://img.shields.io/badge/Power%20Fx-5C2D91)
+![ISO/IEC 17025](https://img.shields.io/badge/ISO%2FIEC-17025-0A66C2)
+![PlantUML](https://img.shields.io/badge/PlantUML-6E4C9E)
+![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
+
+>  🎥 **Voir le projet en action** — ![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?logo=YouTube&logoColor=white)
+-  [▶ Présentation générale](https://youtu.be/54l2evrDRsg)
+-  [▶ Traiter une non-conformité](https://youtu.be/97vB7qhM8t0)
 
 Une application Power Apps qui porte tout le cycle d'une non-conformité (NC) dans un
 laboratoire d'essais accrédité ISO/IEC 17025 : déclaration, analyse des causes, actions,
@@ -18,11 +31,21 @@ données montrées sont fictives.
 
 Auteur : Sébastien Oger.
 
-## En vidéo
+## 🎥 Démonstrations vidéo
 
-| [![Présentation de l'application, vidéo YouTube](https://img.youtube.com/vi/54l2evrDRsg/mqdefault.jpg)](https://youtu.be/54l2evrDRsg) | [![Traiter une non-conformité, vidéo YouTube](https://img.youtube.com/vi/97vB7qhM8t0/mqdefault.jpg)](https://youtu.be/97vB7qhM8t0) |
-|---|---|
-| **[Présentation](https://youtu.be/54l2evrDRsg)** : le parcours en six étapes, sur le jeu de démonstration | **[Utilisation](https://youtu.be/97vB7qhM8t0)** : une non-conformité traitée, de la déclaration au suivi d'efficacité |
+Le moyen le plus rapide de voir l'application réelle en action : **cliquer sur une vignette
+ouvre la vidéo**.
+
+<table>
+  <tr>
+    <td width="50%" align="center"><a href="https://youtu.be/54l2evrDRsg"><img src="images/video-presentation.png" width="100%" alt="Présentation générale de l'application"></a></td>
+    <td width="50%" align="center"><a href="https://youtu.be/97vB7qhM8t0"><img src="images/video-utilisation.png" width="100%" alt="Traiter une non-conformité dans l'application"></a></td>
+  </tr>
+  <tr>
+    <td align="center"><b>▶ <a href="https://youtu.be/54l2evrDRsg">Présentation générale</a></b><br/>Le parcours en six étapes, du signalement à la clôture, sur le jeu de démonstration.</td>
+    <td align="center"><b>▶ <a href="https://youtu.be/97vB7qhM8t0">Traiter une non-conformité</a></b><br/>Déclaration, action immédiate, preuve, analyse causale, action corrective et suivi d'efficacité.</td>
+  </tr>
+</table>
 
 ## Ce que fait l'application
 
